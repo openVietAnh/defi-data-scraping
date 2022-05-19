@@ -1,67 +1,60 @@
 import requests
 import csv
+from datetime import datetime
 
-keys, transactions_id, transactions = None, set(), []
-# Maximum indexed block number: 14745467
-MAX_BLOCK = 14000002
+keys, transactions = None, []
+current_time = int(datetime.now().timestamp())
 
-for block_number in range(14000000, MAX_BLOCK + 1):
+while True:
     query = """
     {
-    borrows (block: {number: 
-    """ + str(block_number) + """}, orderBy: timestamp, orderDirection: desc, where: { 
-    }) {
-        id
-        amount
-        timestamp
-        reserve {
-        id
-        }
-        user {
-        id
-        }
-        caller {
-        id
-        }
-        pool {
+        borrows(where: {timestamp_lt: """ + str(current_time) + """}, first: 1000, orderBy: timestamp, orderDirection: desc) {
             id
+            user {
+                id
+            }
+            caller {
+                id
+            }
+            reserve {
+                symbol
+            }
+            amount
+            borrowRate
+            borrowRateMode
+            timestamp
+            stableTokenDebt
+            variableTokenDebt
         }
-        borrowRate
-        borrowRateMode
-        stableTokenDebt
-        variableTokenDebt
-    }
     }
     """
     response = requests.post('https://api.thegraph.com/subgraphs/name/aave/protocol-v2'
                                 '',
                                 json={'query': query})
     if response.status_code == 200:
-        print("Read block number", block_number, "successfully:", response.status_code)
+        print("Read from timestamp", current_time, "successfully:", response.status_code)
     else:
-        print("Problem reading block number", block_number, ":", response.status_code)
+        print("Problem reading from timestamp", current_time, ":", response.status_code)
     
-    data = response.json()["data"]["borrows"]
+    try:
+        data = response.json()["data"]["borrows"]
+    except Exception:
+        print("Error at timestamp", current_time)
+
     print(len(data), "transactions found")
+    if len(data) == 0:
+        break
     
     if keys is None:
         keys = data[0].keys()
 
-    count = 0
     for transaction in data:
-            if transaction["id"] not in transactions_id:
-                transaction["user"] = transaction["user"]["id"]
-                transaction["reserve"] = transaction["reserve"]["id"]
-                transaction["pool"] = transaction["pool"]["id"]
-                transaction["caller"] = transaction["caller"]["id"]
-                # for key, value in transaction.items():
-                #     print(key, value)
-                transactions.append(transaction)
-                transactions_id.add(transaction["id"])
-                count += 1
-            else:
-                break
-    print("New", count, "transaction(s) updated")
+        transaction["user"] = transaction["user"]["id"]
+        transaction["reserve"] = transaction["reserve"]["symbol"]
+        transaction["caller"] = transaction["caller"]["id"]
+        transactions.append(transaction)
+
+    current_time = int(data[-1]["timestamp"])
 
 with open('borrow.csv', 'w', newline='') as output_file:
     dict_writer = csv.DictWriter(output_file, keys)
