@@ -131,3 +131,6 @@ dist
 
 #Python import
 __pycache__
+
+#Big data files
+allTransaction.csv
