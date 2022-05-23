@@ -135,3 +135,4 @@ __pycache__
 #Big data files
 allTransaction.csv
 usageAsCollateral.csv
+allTransactionType.csv
