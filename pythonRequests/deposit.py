@@ -9,6 +9,7 @@ while True:
     query = """
     {
         deposits(where: {timestamp_lt: """ + str(current_time) + """}, first: 1000, orderBy: timestamp, orderDirection: desc) {
+            id
             user {
                 id
             }
