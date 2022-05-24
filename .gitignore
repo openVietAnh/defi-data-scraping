@@ -129,10 +129,8 @@ dist
 .yarn/install-state.gz
 .pnp.*
 
-#Python import
+# Python import
 __pycache__
 
-#Big data files
+# Big files
 allTransaction.csv
-usageAsCollateral.csv
-allTransactionType.csv
