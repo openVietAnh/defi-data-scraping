@@ -67,7 +67,7 @@ while True:
         last_transactions.add(data[index]["id"])
         index -= 1
 
-with open('borrow.csv', 'w', newline='') as output_file:
+with open('usageAsCollateral.csv', 'w', newline='') as output_file:
     dict_writer = csv.DictWriter(output_file, keys)
     dict_writer.writeheader()
     dict_writer.writerows(transactions)
