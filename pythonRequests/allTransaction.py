@@ -4,7 +4,7 @@ from datetime import datetime
 
 keys, transactions = None, []
 error = []
-current_time = int(datetime.now().timestamp())
+current_time = 1654016400
 last_transactions = set()
 
 while True:
