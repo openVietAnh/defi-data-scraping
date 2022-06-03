@@ -1,0 +1,14 @@
+{
+  "name": "transaction_hash_to_block_number",
+  "version": "1.0.0",
+  "description": "Script getting block number from transaction hash",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Tran Viet Anh",
+  "license": "ISC",
+  "dependencies": {
+    "web3": "^1.7.3"
+  }
+}
