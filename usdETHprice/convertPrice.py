@@ -15,8 +15,11 @@ for token in token_lst:
         reader = csv.reader(csvfile, delimiter=",")
         next(reader, None)
         for item in reader:
-            if token == "WBTC" and len(item[1]) == 15:
-                eth_price = int(item[1]) * 100000
+            if token == "WBTC":
+                if len(item[1]) < 20:
+                    eth_price = int(item[1]) * (10 ** (20 - len(item[1])))
+                else:
+                    eth_price = int(item[1])
             else:
                 eth_price = int(item[1])
             try:
