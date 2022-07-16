@@ -1,7 +1,9 @@
 # defi-scraping
 Scraping and Querying Decentralized Finance's Information on the blockchain
 
-# Gathered informations from January 1st (block # 13916166) to May 31st (maximum block)
-## Remarkable block timestamps
-First block of 2022: #13916166
-Last block of January 2022: #14116760
+# Directories
+`csvData`: Containing AAVE protocol's data mined from The Graph, with 5 token (WBTC, WETH, DAI, USDC, USDT)
+`dataAnalysis`: Containing Python notebooks for drawing charts from csv files.
+`exportedImages`: Exported charts from `dataAnalysis`
+`pythonRequests`: Python code to send HTTP data request to The Graph.
+`usdETHprice`: Get USD price in ETH then calculate each token historical prices data.
