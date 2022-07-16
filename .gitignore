@@ -138,3 +138,4 @@ allTransactionType.csv
 
 # Javascript node module
 node_modules
+csvData/1-minute-mark/*.csv
