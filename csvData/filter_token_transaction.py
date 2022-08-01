@@ -14,18 +14,17 @@ file_config = [
     ("redeemUnderlying", 4),
     ("swap", 3),
     ("liquidationCall", 3),
-    ("rebalanceStableBorrowRate", 3),
     ("flashLoan", 1),
 ]
 
 for file in file_config:
-    with open("../csvData/" + file[0] + ".csv", "r") as csvfile:
+    with open("./update_data/" + file[0] + "_update.csv", "r") as csvfile:
         reader = csv.reader(csvfile, delimiter=",")
         next(reader, None)
         for item in reader:
             hash_to_token[item[0].split(":")[2]] = item[file[1]]
 
-with open("../csvData/allTransactionType.csv", "r") as csvfile:
+with open("./update_data/allTransactionType.csv", "r") as csvfile:
     reader = csv.reader(csvfile, delimiter=",")
     next(reader, None)
     for item in reader:
@@ -33,7 +32,7 @@ with open("../csvData/allTransactionType.csv", "r") as csvfile:
             token_transactions[hash_to_token[item[0].split(":")[2]]].append({keys[index]: item[index] for index in range(len(keys))})
 
 for token in token_lst:
-    with open("./tokenTransactions/" + token + ".csv", 'w', newline='') as output_file:
+    with open("./update_data/" + token + ".csv", 'w', newline='') as output_file:
         dict_writer = csv.DictWriter(output_file, keys)
         dict_writer.writeheader()
         dict_writer.writerows(token_transactions[token])
