@@ -23,19 +23,19 @@ for token in token_lst:
         for item in reader:
             if item[0] not in timestamps:
                 index, time = start_index, int(item[0])
-                if time > time_lst[0]:
+                if time < time_lst[0]:
                     data.append({"timestamp": item[0], "price": time_to_price[time_lst[0]]})
-                elif time < time_lst[-1]:
+                elif time > time_lst[-1]:
                     data.append({"timestamp": item[0], "price": time_to_price[time_lst[-1]]})
                 else:
-                    while not time_lst[index] > time > time_lst[index + 1]:
+                    while not time_lst[index] < time < time_lst[index + 1]:
                         index += 1
                     start_index = index
-                    before_price = time_to_price[time_lst[index + 1]]
-                    after_price = time_to_price[time_lst[index]]
+                    before_price = time_to_price[time_lst[index]]
+                    after_price = time_to_price[time_lst[index + 1]]
                     price_diff = after_price - before_price
-                    time_diff = time_lst[index] - time_lst[index + 1]
-                    calculated_price = before_price + (price_diff / time_diff) * (int(item[0]) - time_lst[index + 1])
+                    time_diff = time_lst[index + 1] - time_lst[index]
+                    calculated_price = before_price + (price_diff / time_diff) * (int(item[0]) - time_lst[index])
                     data.append({"timestamp": item[0], "price": int(calculated_price)})
 
 data.sort(key=lambda x: x["timestamp"])
