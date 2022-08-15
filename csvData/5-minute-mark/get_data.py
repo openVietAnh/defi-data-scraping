@@ -9,12 +9,16 @@ import datetime
 # WETH: 2020-12-01T06:11:40
 
 # End-time
-# DAI: 2022-05-31T23:04:51 (earliest)
+# DAI:  1659285305
+# USDC: 1659286633
+# USDT: 1659286247
+# WETH: 1659286703 (lastest)
+# WBTC: 1659283944
 
 token_lst = ["USDC", "USDT", "WBTC", "WETH", "DAI"]
 keys = ["timestamp", "time", "blockNumber", "totalDeposits", "depositRate", "stableBorrowRate", "variableBorrowRate", "utilizationRate"]
 start_time = datetime.datetime(2020, 12, 2, 20, 8, 0)
-end_time = datetime.datetime(2022, 5, 31, 23, 5, 0)
+end_time = datetime.datetime(2022, 7, 31, 23, 58, 23)
 
 for token in token_lst:
     data = []
@@ -32,7 +36,7 @@ for token in token_lst:
                 info["timestamp"] = int(time.timestamp())
                 info["time"] = time.isoformat(timespec='seconds')
                 data.append(dict(info))
-                time += datetime.timedelta(minutes=1)
+                time += datetime.timedelta(minutes=5)
             info = new_info
             if row_time > end_time:
                 break
