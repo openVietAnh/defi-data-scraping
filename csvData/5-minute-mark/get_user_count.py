@@ -10,7 +10,7 @@ import datetime
 token_lst = ["USDC", "USDT", "WBTC", "WETH", "DAI"]
 keys = ["timestamp", "userCount"]
 start_time = datetime.datetime(2020, 12, 2, 20, 8, 0)
-end_time = datetime.datetime(2022, 5, 31, 23, 5, 0)
+end_time = datetime.datetime(2022, 7, 31, 23, 58, 23)
 
 for token in token_lst:
     data = []
@@ -27,7 +27,7 @@ for token in token_lst:
             while time <= row_time and time <= end_time:
                 info["timestamp"] = int(time.timestamp())
                 data.append(dict(info))
-                time += datetime.timedelta(minutes=1)
+                time += datetime.timedelta(minutes=5)
             info = new_info
             if row_time > end_time:
                 break
