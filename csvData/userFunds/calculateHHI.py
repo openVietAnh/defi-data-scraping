@@ -13,9 +13,9 @@
 # WETH: 1659286703
 
 import csv
-from web3 import Web3, EthereumTesterProvider
-w3 = Web3(Web3.HTTPProvider('https://eth-mainnet.alchemyapi.io/v2/0e3D_mlVqAhNuFvqu1-Exd3ElNON88KE'))
-print(w3.isConnected())
+# from web3 import Web3, EthereumTesterProvider
+# w3 = Web3(Web3.HTTPProvider('https://eth-mainnet.alchemyapi.io/v2/0e3D_mlVqAhNuFvqu1-Exd3ElNON88KE'))
+# print(w3.isConnected())
 
 def calculate_hhi(user_funds):
     total = sum(user_funds.values())
@@ -29,44 +29,39 @@ def update_funds(user_funds, deposit_rate, before, after):
 
 token_lst = ["USDC", "USDT", "WBTC", "WETH", "DAI"]
 
+token_decimal = {
+    "DAI": 18,
+    "USDC": 6,
+    "USDT": 6,
+    "WBTC": 8,
+    "WETH": 18,
+}
+
 for token in token_lst:
     data = []
     user_funds = {}
     last_timestamp = 0
     deposit_rate = 0
     with open(token + ".csv", "r") as f:
-        data = f.readlines()
-        for item in data:
+        lines = f.readlines()
+        for item in lines:
             info = item.strip().split(",")
             user_funds = update_funds(user_funds, deposit_rate, last_timestamp, int(info[1]))
             if info[0] == "deposit":
                 try:
-                    user_funds[info[2]] += float(info[3]) / (10 ** 18)
+                    user_funds[info[2]] += float(info[3]) / (10 ** token_decimal[token])
                 except KeyError:
-                    user_funds[info[2]] = float(info[3]) / (10 ** 18)
+                    user_funds[info[2]] = float(info[3]) / (10 ** token_decimal[token])
             elif info[0] == "redeemUnderlying":
                 try:
-                    user_funds[info[3]] -= float(info[2]) / (10 ** 18)
+                    user_funds[info[3]] -= float(info[2]) / (10 ** token_decimal[token])
                 except KeyError:
-                    hash = info[-1]
-                    user = w3.eth.get_transaction_receipt(hash)["from"].lower()
-                    try:
-                        user_funds[user] -= float(info[2]) / (10 ** 18)
-                    except KeyError:
-                        try:
-                            user_funds[info[4]] -= float(info[2]) / (10 ** 18)
-                        except KeyError:
-                            print("not found", info)
+                    pass
             elif info[0] == "liquidationCall":
                 try:
-                    user_funds[info[2]] -= float(info[3]) / (10 ** 18)
+                    user_funds[info[2]] -= float(info[3]) / (10 ** token_decimal[token])
                 except KeyError:
-                    hash = info[-1]
-                    user = w3.eth.get_transaction_receipt(hash)["from"].lower()
-                    try:
-                        user_funds[user] -= float(info[2]) / (10 ** 18)
-                    except KeyError:
-                        print("User not found", user, hash)
+                    pass
             elif info[0] == "update":
                 data.append({"timestamp": info[1], "HHI": calculate_hhi(user_funds)})
             else:

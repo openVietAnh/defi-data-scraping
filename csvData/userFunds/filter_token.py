@@ -21,7 +21,7 @@ for f in files:
         for item in reader:
             if item[reserve_index[f]] in token_lst:
                 if f == "deposit":
-                    transactions[item[reserve_index[f]]].append(("deposit", item[-1], item[1], item[4], item[0].split(":")[2]))
+                    transactions[item[reserve_index[f]]].append(("deposit", item[-1], item[2], item[4], item[0].split(":")[2]))
                 elif f == "liquidationCall":
                     transactions[item[reserve_index[f]]].append(("liquidationCall", item[-1], item[2], item[4], item[0].split(":")[2]))
                 elif f == "redeemUnderlying":
