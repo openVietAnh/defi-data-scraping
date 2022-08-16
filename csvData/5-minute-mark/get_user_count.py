@@ -10,7 +10,7 @@ import datetime
 token_lst = ["USDC", "USDT", "WBTC", "WETH", "DAI"]
 keys = ["timestamp", "userCount"]
 start_time = datetime.datetime(2020, 12, 2, 20, 8, 0)
-end_time = datetime.datetime(2022, 7, 31, 23, 58, 23)
+end_time = datetime.datetime(2022, 7, 31, 23, 12, 24)
 
 for token in token_lst:
     data = []

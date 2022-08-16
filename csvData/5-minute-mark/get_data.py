@@ -2,8 +2,8 @@ import csv
 import datetime
 
 # Start-time
-# DAI: 2020-12-01T23:40:50
-# USDC: 2020-12-02T20:07:35 (latest)
+# DAI: 2020-12-01T23:40:50 
+# USDC: 2020-12-02T20:07:35 (lastest)
 # USDT: 2020-12-02T17:15:31
 # WBTC: 2020-12-02T19:55:51
 # WETH: 2020-12-01T06:11:40
@@ -12,13 +12,13 @@ import datetime
 # DAI:  1659285305
 # USDC: 1659286633
 # USDT: 1659286247
-# WETH: 1659286703 (lastest)
-# WBTC: 1659283944
+# WETH: 1659286703
+# WBTC: 1659283944 (earliest)
 
 token_lst = ["USDC", "USDT", "WBTC", "WETH", "DAI"]
 keys = ["timestamp", "time", "blockNumber", "totalDeposits", "depositRate", "stableBorrowRate", "variableBorrowRate", "utilizationRate"]
 start_time = datetime.datetime(2020, 12, 2, 20, 8, 0)
-end_time = datetime.datetime(2022, 7, 31, 23, 58, 23)
+end_time = datetime.datetime(2022, 7, 31, 23, 12, 24)
 
 for token in token_lst:
     data = []
