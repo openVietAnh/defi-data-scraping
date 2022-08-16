@@ -15,24 +15,25 @@ file_config = [
     ("swap", 3),
     ("liquidationCall", 3),
     ("flashLoan", 1),
+    ("rebalanceStableBorrowRate", 3)
 ]
 
 for file in file_config:
-    with open("./update_data/" + file[0] + "_update.csv", "r") as csvfile:
+    with open(file[0] + ".csv", "r") as csvfile:
         reader = csv.reader(csvfile, delimiter=",")
         next(reader, None)
         for item in reader:
-            hash_to_token[item[0].split(":")[2]] = item[file[1]]
+            hash_to_token[item[0]] = item[file[1]]
 
-with open("./update_data/allTransactionType.csv", "r") as csvfile:
+with open("allTransactionType.csv", "r") as csvfile:
     reader = csv.reader(csvfile, delimiter=",")
     next(reader, None)
     for item in reader:
-        if hash_to_token[item[0].split(":")[2]] in token_lst:
-            token_transactions[hash_to_token[item[0].split(":")[2]]].append({keys[index]: item[index] for index in range(len(keys))})
+        if hash_to_token[item[0]] in token_lst:
+            token_transactions[hash_to_token[item[0]]].append({keys[index]: item[index] for index in range(len(keys))})
 
 for token in token_lst:
-    with open("./update_data/" + token + ".csv", 'w', newline='') as output_file:
+    with open("./tokenTransactions/" + token + ".csv", 'w', newline='') as output_file:
         dict_writer = csv.DictWriter(output_file, keys)
         dict_writer.writeheader()
         dict_writer.writerows(token_transactions[token])
