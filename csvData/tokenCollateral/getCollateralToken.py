@@ -52,7 +52,32 @@ for item in transactions:
                     token_collateral[item[-1]].add(deposit_id_to_reserve[item[3].split(":")[2]])
                 except KeyError:
                     token_collateral[item[-1]].add(usage_id_to_reserve[item[3].split(":")[2]])
-        
+
+
+all = set()
 for key, value in token_collateral.items():
-    print(key, ":", len(value))
-    print(value)
+    for item in value:
+        all.add(item)
+
+print(all)
+print(len(all))
+
+import requests
+
+query = """
+    {
+  reserves(first: 1000) {
+    symbol
+  }
+}
+    """
+response = requests.post('https://api.thegraph.com/subgraphs/name/aave/protocol-v2'
+                            '',
+                            json={'query': query})
+data = response.json()["data"]["reserves"]
+available = set()
+for item in data:
+    available.add(item["symbol"])
+for item in all:
+    if item not in available:
+        print(item)
