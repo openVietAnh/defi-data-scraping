@@ -21,11 +21,24 @@ for f in files:
         for item in reader:
             if item[reserve_index[f]] in token_lst:
                 if f == "deposit":
-                    transactions[item[reserve_index[f]]].append(("deposit", item[-1], item[1], item[4]))
+                    transactions[item[reserve_index[f]]].append(("deposit", item[-1], item[1], item[4], item[0].split(":")[2]))
                 elif f == "liquidationCall":
-                    transactions[item[reserve_index[f]]].append(("liquidationCall", item[-1], item[2], item[4]))
+                    transactions[item[reserve_index[f]]].append(("liquidationCall", item[-1], item[2], item[4], item[0].split(":")[2]))
                 elif f == "redeemUnderlying":
-                    transactions[item[reserve_index[f]]].append(("redeemUnderlying", item[-1], item[5], item[3]))
+                    transactions[item[reserve_index[f]]].append(("redeemUnderlying", item[-1], item[5], item[3], item[2], item[0].split(":")[2]))
+
+for token in token_lst:
+    with open("../reserveInfo/" + token + "_TLV_USD.csv", "r") as csvfile:
+        reader = csv.reader(csvfile, delimiter=",")
+        next(reader, None)
+        for item in reader:
+            transactions[token].append((item[4], item[0]))
+
+    with open("../5-minute-mark/" + token + "-info.csv", "r") as csvfile:
+        reader = csv.reader(csvfile, delimiter=",")
+        next(reader, None)
+        for item in reader:
+            transactions[token].append(("update", item[0]))
     
 for token in token_lst:
     transactions[token].sort(key = lambda x: x[1])
