@@ -4,7 +4,6 @@ from datetime import datetime
 
 keys, info, token = None, [], "WBTC"
 errors = []
-current_time = 1654016400
 block_numbers = set()
 
 with open("../csvData/hashtoBlockNum/" + token + "_block.csv", "r") as csv_file:
@@ -31,19 +30,16 @@ with open("../csvData/hashtoBlockNum/" + token + "_block.csv", "r") as csv_file:
             '',
             json={'query': query})
         if response.status_code != 200:
-            print("Problem reading from timestamp", current_time, ":", response.status_code)
+            print("Problem reading from block", num, ":", response.status_code)
             errors.append(num)
             continue
 
         try:
             data = response.json()["data"]["reserves"][0]
         except Exception:
-            print("Error at timestamp", current_time)
+            print("Error at block", num)
             errors.append(num)
             continue
-
-        # if len(data) == 0:
-        #     break
 
         print("Get block", num, "at timestamp", data["lastUpdateTimestamp"])
         
