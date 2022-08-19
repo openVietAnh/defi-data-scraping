@@ -1,77 +1,106 @@
-# Start time
-# DAI:  1606840850
-# USDC: 1606914455 (lastest)
-# USDT: 1606904131
-# WBTC: 1606913751
-# WETH: 1606777900
-
-# End time
-# DAI:  1659284341
-# USDC: 1659286633
-# USDT: 1659278863 (earliest)
-# WBTC: 1659283944
-# WETH: 1659286703
-
 import csv
-# from web3 import Web3, EthereumTesterProvider
-# w3 = Web3(Web3.HTTPProvider('https://eth-mainnet.alchemyapi.io/v2/0e3D_mlVqAhNuFvqu1-Exd3ElNON88KE'))
-# print(w3.isConnected())
+import requests
 
-def calculate_hhi(user_funds):
-    total = sum(user_funds.values())
-    return sum([(value / total * 100) ** 2 for value in user_funds.values()])
+# {
+#   "data": {
+#     "reserves": [
+#       {
+#         "id": "0x2260fac5e5542a773aa44fbcfedf7c193bc2c5990xb53c1a33016b2dc2ff3653530bff1848a515c8c5",
+#         "symbol": "WBTC"
+#       },
+#       {
+#         "id": "0x6b175474e89094c44da98b954eedeac495271d0f0xb53c1a33016b2dc2ff3653530bff1848a515c8c5",
+#         "symbol": "DAI"
+#       },
+#       {
+#         "id": "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb480xb53c1a33016b2dc2ff3653530bff1848a515c8c5",
+#         "symbol": "USDC"
+#       },
+#       {
+#         "id": "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc20xb53c1a33016b2dc2ff3653530bff1848a515c8c5",
+#         "symbol": "WETH"
+#       },
+#       {
+#         "id": "0xdac17f958d2ee523a2206206994597c13d831ec70xb53c1a33016b2dc2ff3653530bff1848a515c8c5",
+#         "symbol": "USDT"
+#       }
+#     ]
+#   }
+# }
 
-def update_funds(user_funds, deposit_rate, before, after):
-    for key, value in user_funds.items():
-        gain = value * deposit_rate / 31556926 * (after - before)
-        user_funds[key] += gain
-    return user_funds
+def calculateHHI(userFunds):
+    total = sum(userFunds.values())
+    return sum([(value / total * 100) ** 2 for value in userFunds.values()])
 
-token_lst = ["USDC", "USDT", "WBTC", "WETH", "DAI"]
+TOKEN = "DAI"
+ID = "0x6b175474e89094c44da98b954eedeac495271d0f0xb53c1a33016b2dc2ff3653530bff1848a515c8c5"
+DECIMAL = 18
 
-token_decimal = {
-    "DAI": 18,
-    "USDC": 6,
-    "USDT": 6,
-    "WBTC": 8,
-    "WETH": 18,
+data, errors = [], []
+
+with open(TOKEN + "_fund_block.csv", "r") as f:
+    count = 0
+    blocks = f.readlines()
+    total_length = len(blocks)
+    for item in blocks[-1:]:
+        lastFund = None
+        userFunds = {}
+        block = item.strip()
+        while True:
+            bonus_condition = "" if lastFund is None else "scaledATokenBalance_lte: \"" + lastFund + "\""
+            query = """
+{
+    userReserves(
+        first: 1000
+        block: {number: """ + block + """},
+        where: {
+            reserve: \"""" + ID + """\",
+            scaledATokenBalance_gt: 0,""" + bonus_condition + """},
+        orderBy: scaledATokenBalance,
+        orderDirection: desc
+    ) {
+        user {
+            id
+        }
+        scaledATokenBalance
+    }
 }
+"""
+            response = requests.post(
+                'https://api.thegraph.com/subgraphs/name/aave/protocol-v2'
+                '',
+                json={'query': query})
+            # print(query)
+            if response.status_code != 200:
+                print("Problem reading from block", block, ":", response.status_code)
+                errors.append(block)
+                continue
+            try:
+                output = response.json()["data"]["userReserves"]
+            except Exception:
+                print(response.json())
+                print("Error at block", block)
+                continue
+            index = 0
+            while index < len(output) and output[index]["user"]["id"] in userFunds.keys():
+                index += 1
+            if index == len(output):
+                break
+            print("Got", len(output) - index, " users")
+            for i in range(index, len(output)):
+                userFunds[output[i]["user"]["id"]] = float(output[i]["scaledATokenBalance"]) / DECIMAL
+            lastFund = output[-1]["scaledATokenBalance"]
+        hhi = calculateHHI(userFunds)
+        data.append({"block": block, "HHI": hhi})
+        count += 1
+        print(count / total_length * 100, "%;", hhi)
 
-for token in token_lst:
-    data = []
-    user_funds = {}
-    last_timestamp = 0
-    deposit_rate = 0
-    with open(token + ".csv", "r") as f:
-        lines = f.readlines()
-        for item in lines:
-            info = item.strip().split(",")
-            user_funds = update_funds(user_funds, deposit_rate, last_timestamp, int(info[1]))
-            if info[0] == "deposit":
-                try:
-                    user_funds[info[2]] += float(info[3]) / (10 ** token_decimal[token])
-                except KeyError:
-                    user_funds[info[2]] = float(info[3]) / (10 ** token_decimal[token])
-            elif info[0] == "redeemUnderlying":
-                try:
-                    user_funds[info[3]] -= float(info[2]) / (10 ** token_decimal[token])
-                except KeyError:
-                    pass
-            elif info[0] == "liquidationCall":
-                try:
-                    user_funds[info[2]] -= float(info[3]) / (10 ** token_decimal[token])
-                except KeyError:
-                    pass
-            elif info[0] == "update":
-                data.append({"timestamp": info[1], "HHI": calculate_hhi(user_funds)})
-            else:
-                deposit_rate = float(info[0])
-            last_timestamp = int(info[1])
+with open(TOKEN + '_HHI.csv', 'w', newline='') as output_file:
+    dict_writer = csv.DictWriter(output_file, ["block", "HHI"])
+    dict_writer.writeheader()
+    dict_writer.writerows(data)
+
+
+
     
-    with open(token + "_HHI.csv", 'w', newline='') as output_file:
-        dict_writer = csv.DictWriter(output_file, ["timestamp", "HHI"])
-        dict_writer.writeheader()
-        dict_writer.writerows(data)
-
-
 
