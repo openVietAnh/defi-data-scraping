@@ -12,11 +12,11 @@ def liquidationToDeposit(liquidationRate):
     return (1 + liquidationRate / (10 ** 27) / SECONDS_PER_YEAR) ** SECONDS_PER_YEAR - 1
 
 token_config = [
-    ("DAI", 18, 1),
-    ("USDC", 6, 0),
-    ("USDT", 6, 0),
-    ("WBTC", 8, 1),
-    ("WETH", 18, 1),
+    ("DAI", 18),
+    ("USDC", 6),
+    ("USDT", 6),
+    ("WBTC", 8),
+    ("WETH", 18),
 ]
 
 keys = [
@@ -32,19 +32,19 @@ keys = [
 
 for token in token_config:
     data = []
-    with open(token[0] + "_raw_info.csv", "r") as csv_file:
+    with open(token[0] + "_new_info.csv", "r") as csv_file:
         reader = csv.reader(csv_file, delimiter=",")
         next(reader, None)
         for item in reader:
             dct = {
-                "totalDeposits": int(item[0 + token[2]]) / (10 ** token[1]),
-                "stableBorrowRate": int(item[1 + token[2]]) / (10 ** 25),
-                "variableBorrowRate": int(item[2 + token[2]]) / (10 ** 25),
-                "depositRate": liquidationToDeposit(int(item[3 + token[2]])),
-                "utilizationRate": item[4 + token[2]],
-                "timestamp": item[5 + token[2]],
-                "blockNumber": item[6 + token[2]],
-                "time": datetime.datetime.fromtimestamp(int(item[5 + token[2]])).isoformat()
+                "totalDeposits": int(item[1]) / (10 ** token[1]),
+                "stableBorrowRate": int(item[2]) / (10 ** 25),
+                "variableBorrowRate": int(item[3]) / (10 ** 25),
+                "depositRate": liquidationToDeposit(int(item[4])),
+                "utilizationRate": item[5],
+                "timestamp": item[6],
+                "blockNumber": item[7],
+                "time": datetime.datetime.fromtimestamp(int(item[6])).isoformat()
             }
             data.append(dct)
         data.sort(key = lambda x: x["timestamp"])
