@@ -1,5 +1,6 @@
 import csv
 import requests
+import datetime
 
 # {
 #   "data": {
@@ -39,10 +40,12 @@ DECIMAL = 18
 data, errors = [], []
 
 with open(TOKEN + "_fund_block.csv", "r") as f:
+    lastTime = datetime.datetime.now()
+    lastProgress = 0
     count = 0
     blocks = f.readlines()
     total_length = len(blocks)
-    for item in blocks[-1:]:
+    for item in blocks:
         lastFund = None
         userFunds = {}
         block = item.strip()
@@ -92,8 +95,13 @@ with open(TOKEN + "_fund_block.csv", "r") as f:
             lastFund = output[-1]["scaledATokenBalance"]
         hhi = calculateHHI(userFunds)
         data.append({"block": block, "HHI": hhi})
+        finishTime = datetime.datetime.now()
         count += 1
-        print(count / total_length * 100, "%;", hhi)
+        progress = count / total_length * 100
+        delta = finishTime - lastTime
+        end = datetime.datetime.now() + (delta / (progress - lastProgress) * (100 - progress))
+        print(progress, "%;", hhi)
+        print("Estimated end at:", end.hour, end.minute)
 
 with open(TOKEN + '_HHI.csv', 'w', newline='') as output_file:
     dict_writer = csv.DictWriter(output_file, ["block", "HHI"])
