@@ -1,6 +1,6 @@
 import csv
 
-token_lst = ["USDT"]
+token_lst = ["DAI"]
 
 for token in token_lst:
     userCount, tokenHHI = {}, {}
