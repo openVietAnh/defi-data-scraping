@@ -3,7 +3,7 @@ import csv
 token_lst = ["DAI"]
 
 for token in token_lst:
-    userCount, tokenHHI = {}, {}
+    userCount, tokenHHI, depositers, borrowers = {}, {}, {}, {}
     with open("../tokenUserCount/" + token + ".csv", "r") as csvfile:
         reader = csv.reader(csvfile, delimiter=",")
         next(reader, None)
@@ -16,8 +16,20 @@ for token in token_lst:
         for item in reader:
             tokenHHI[item[0]] = item[1]
 
+    with open("../depositer/" + token + "_depositers.csv", "r") as csvfile:
+        reader = csv.reader(csvfile, delimiter=",")
+        next(reader, None)
+        for item in reader:
+            depositers[item[0]] = item[1]
+
+    with open("../borrower/" + token + "_borrower.csv", "r") as csvfile:
+        reader = csv.reader(csvfile, delimiter=",")
+        next(reader, None)
+        for item in reader:
+            borrowers[item[0]] = item[1]
+
     data = []
-    lastUserCount, lastHHI = None, None
+    lastUserCount, lastHHI, lastDepositers, lastBorrowers = 0, 0, 0, 0
     keys = ["timestamp","time","blockNumber","totalDeposits","depositRate","stableBorrowRate","variableBorrowRate","utilizationRate"]
     with open(token + "_TLV_USD.csv", "r") as csvfile:
         reader = csv.reader(csvfile, delimiter=",")
@@ -35,9 +47,22 @@ for token in token_lst:
                 lastHHI = tokenHHI[item[2]]
             else:
                 row["HHI"] = lastHHI
+
+            if item[2] in depositers.keys():
+                row["depositers"] = depositers[item[2]]
+                lastDepositers = depositers[item[2]]
+            else:
+                row["depositers"] = lastDepositers
+            data.append(row)
+
+            if item[2] in borrowers.keys():
+                row["borrowers"] = borrowers[item[2]]
+                lastBorrowers = borrowers[item[2]]
+            else:
+                row["borrowers"] = lastBorrowers
             data.append(row)
     
-    keys = keys + ["userCount", "HHI"]
+    keys = keys + ["userCount", "HHI", "depositers", "borrowers"]
     with open(token + '_info.csv', 'w', newline='') as output_file:
         dict_writer = csv.DictWriter(output_file, keys)
         dict_writer.writeheader()
