@@ -1,6 +1,9 @@
-import requests
+# pylint: disable-msg=C0103
+"""
+    Get all AAVE V2 transactions from The Graph subgraph
+"""
 import csv
-from datetime import datetime
+import requests
 
 FIRST_PART_QUERY = """
 {
@@ -32,19 +35,16 @@ while True:
     if response.status_code != 200:
         print("Problem reading from timestamp", current_time, ":", response.status_code)
         continue
-
     try:
         data = response.json()["data"]["userTransactions"]
-    except Exception:
+    except (AttributeError, KeyError) as error:
         print("Error at timestamp", current_time)
+        print(error)
         continue
-
     if len(data) == 0:
         break
-
     if keys is None:
         keys = data[0].keys()
-
     index = 0
     try:
         while data[index]["id"] in last_transactions:
@@ -53,12 +53,10 @@ while True:
         current_time -= 1
         continue
     print(len(data) - index, "transactions found at timestamp", current_time)
-
     for transaction in data[index:]:
         transaction["pool"] = transaction["pool"]["id"]
         transaction["user"] = transaction["user"]["id"]
         transactions.append(transaction)
-
     current_time = int(data[-1]["timestamp"])
     index = -1
     last_transactions = set()
@@ -67,7 +65,7 @@ while True:
         index -= 1
 
 with open('allTransaction.csv', 'w', newline='') as output_file:
-    dict_writer = csv.DictWriter(output_file, keys)
-    dict_writer.writeheader()
-    dict_writer.writerows(transactions)
+    DICT_WRITER = csv.DictWriter(output_file, keys)
+    DICT_WRITER.writeheader()
+    DICT_WRITER.writerows(transactions)
         

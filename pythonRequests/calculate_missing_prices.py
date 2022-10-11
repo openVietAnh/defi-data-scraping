@@ -1,20 +1,23 @@
+# pylint: disable-msg=C0103
+"""
+    Calculate token prices at needed timestamps that AAVE V2 subgraph did not store
+"""
 import csv
 import requests
 
-token_lst = ["WBTC", "DAI", "USDC", "USDT"]
+TOKEN_LST = ["WBTC", "DAI", "USDC", "USDT"]
 
 timestamp_to_prices = {}
 with open("../usdETHprice/prices.csv", "r") as csvfile:
-    reader = csv.reader(csvfile, delimiter=",")
-    for item in reader:
+    READER = csv.reader(csvfile, delimiter=",")
+    for item in READER:
         timestamp_to_prices[item[1]] = item[0]
 
-count = 0
-for token in token_lst:
+for token in TOKEN_LST:
     with open("../csvData/" + token + "-price.csv", "r") as csvfile:
-        reader = csv.reader(csvfile, delimiter=",")
-        next(reader, None)
-        for item in reader:
+        READER = csv.reader(csvfile, delimiter=",")
+        next(READER, None)
+        for item in READER:
             if int(item[1]) not in timestamp_to_prices.keys():
                 after_query = """
                 {
@@ -59,14 +62,15 @@ for token in token_lst:
                     json={'query': before_query})
                 before_price = response.json()["data"]["usdEthPriceHistoryItems"][0]
                 price_diff = int(after_price["price"]) - int(before_price["price"])
-                time_diff = after_price["timestamp"] - before_price["timestamp" ]
+                time_diff = after_price["timestamp"] - before_price["timestamp"]
                 print(before_price, after_price)
-                calculated_price = int(before_price["price"]) + (price_diff / time_diff) * (int(item[1]) - before_price["timestamp"])
+                change = (price_diff / time_diff) * (int(item[1]) - before_price["timestamp"])
+                calculated_price = int(before_price["price"]) + change
                 print("Calculated price", calculated_price)
                 timestamp_to_prices[int(item[1])] = calculated_price
 
-data = [{"timestamp": key, "price": timestamp_to_prices[key]} for key in timestamp_to_prices.keys()]
+DATA = [{"timestamp": key, "price": timestamp_to_prices[key]} for key in timestamp_to_prices]
 with open("../usdETHprice/" + 'fullPrices.csv', 'w', newline='') as output_file:
-    dict_writer = csv.DictWriter(output_file, ["timestamp", "price"])
-    dict_writer.writeheader()
-    dict_writer.writerows(data)
+    DICT_WRITER = csv.DictWriter(output_file, ["timestamp", "price"])
+    DICT_WRITER.writeheader()
+    DICT_WRITER.writerows(DATA)

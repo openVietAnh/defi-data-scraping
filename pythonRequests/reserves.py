@@ -1,10 +1,12 @@
-import requests
+"""
+    Get reserve name and symbol
+"""
 import csv
+import requests
 
-keys, reserves = ["id", "name", "symbol"], []
-# Maximum indexed block number: 14745467
+KEYS = ["id", "name", "symbol"]
 
-query = """
+QUERY = """
 {
   reserves {
     id
@@ -13,13 +15,13 @@ query = """
   }
 }
 """
-response = requests.post('https://api.thegraph.com/subgraphs/name/aave/protocol-v2'
-                            '',
-                            json={'query': query})
+RESPONSE = requests.post('https://api.thegraph.com/subgraphs/name/aave/protocol-v2'
+                         '',
+                         json={'query': QUERY})
 
-data = response.json()["data"]["reserves"]
+DATA = RESPONSE.json()["data"]["reserves"]
 
 with open('reserves.csv', 'w', newline='') as output_file:
-    dict_writer = csv.DictWriter(output_file, keys)
-    dict_writer.writeheader()
-    dict_writer.writerows(data)
+    DICT_WRITER = csv.DictWriter(output_file, KEYS)
+    DICT_WRITER.writeheader()
+    DICT_WRITER.writerows(DATA)
