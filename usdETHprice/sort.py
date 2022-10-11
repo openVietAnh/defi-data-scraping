@@ -1,3 +1,7 @@
+# pylint: disable-msg=C0103
+"""
+    Sort rows in csv files by timestamp
+"""
 import csv
 
 data = []
@@ -8,9 +12,9 @@ with open("fullPrices.csv", "r") as csvfile:
     for item in reader:
         data.append({"timestamp": item[0], "price": item[1]})
 
-data.sort(key = lambda x: x["timestamp"])
+data.sort(key=lambda x: x["timestamp"])
 
 with open('fullPrices.csv', 'w', newline='') as output_file:
-    dict_writer = csv.DictWriter(output_file, ["timestamp", "price"])
-    dict_writer.writeheader()
-    dict_writer.writerows(data)
+    DICT_WRITER = csv.DictWriter(output_file, ["timestamp", "price"])
+    DICT_WRITER.writeheader()
+    DICT_WRITER.writerows(data)
