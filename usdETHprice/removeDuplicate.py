@@ -1,3 +1,7 @@
+# pylint: disable-msg=C0103
+"""
+    Remove duplicated rows from csv file
+"""
 import csv
 
 data = []
@@ -12,6 +16,6 @@ with open("fullPrices.csv", "r") as csvfile:
             timestamp.add(item[0])
 
 with open('fullPrices.csv', 'w', newline='') as output_file:
-    dict_writer = csv.DictWriter(output_file, ["timestamp", "price"])
-    dict_writer.writeheader()
-    dict_writer.writerows(data)
+    DICT_WRITER = csv.DictWriter(output_file, ["timestamp", "price"])
+    DICT_WRITER.writeheader()
+    DICT_WRITER.writerows(data)
