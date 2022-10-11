@@ -2,15 +2,11 @@ import requests
 import csv
 from datetime import datetime
 
-keys, transactions = None, []
-error = []
-current_time = 1654016400
-last_transactions = set()
-
-while True:
-    query = """
-    {
-        userTransactions(where: {timestamp_lte: """ + str(current_time) + """}, first: 1000, orderBy: timestamp, orderDirection: desc) {
+FIRST_PART_QUERY = """
+{
+        userTransactions(where: {timestamp_lte: """
+SECOND_PART_QUERY = """
+}, first: 1000, orderBy: timestamp, orderDirection: desc) {
             id
             pool {
                 id
@@ -21,14 +17,22 @@ while True:
             timestamp
         }
     }
-    """
+"""
+
+keys, transactions = None, []
+error = []
+current_time = 1654016400
+last_transactions = set()
+
+while True:
+    query = FIRST_PART_QUERY + str(current_time) + SECOND_PART_QUERY
     response = requests.post('https://api.thegraph.com/subgraphs/name/aave/protocol-v2'
-                                '',
-                                json={'query': query})
+                             '',
+                             json={'query': query})
     if response.status_code != 200:
         print("Problem reading from timestamp", current_time, ":", response.status_code)
         continue
-    
+
     try:
         data = response.json()["data"]["userTransactions"]
     except Exception:
@@ -37,7 +41,7 @@ while True:
 
     if len(data) == 0:
         break
-    
+
     if keys is None:
         keys = data[0].keys()
 
@@ -46,8 +50,8 @@ while True:
         while data[index]["id"] in last_transactions:
             index += 1
     except IndexError:
-            current_time -= 1
-            continue
+        current_time -= 1
+        continue
     print(len(data) - index, "transactions found at timestamp", current_time)
 
     for transaction in data[index:]:
