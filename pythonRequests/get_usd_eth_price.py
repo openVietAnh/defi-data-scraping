@@ -1,6 +1,9 @@
-import requests
+# pylint: disable-msg=C0103
+"""
+    Get USD price in ETH at multiple timestamp from AAVE V2 subgraph
+"""
 import csv
-from datetime import datetime
+import requests
 
 keys, prices = ["timestamp", "price"], []
 current_time = 1654016400
@@ -20,28 +23,25 @@ while True:
     }
     """
     response = requests.post('https://api.thegraph.com/subgraphs/name/aave/protocol-v2'
-                                '',
-                                json={'query': query})
+                             '',
+                             json={'query': query})
     if response.status_code != 200:
         print("Problem reading from timestamp", current_time, ":", response.status_code)
         continue
     try:
         data = response.json()["data"]["usdEthPriceHistoryItems"]
-    except Exception:
+    except (KeyError, AttributeError) as error:
         print("Error at timestamp", current_time)
+        print(error)
         continue
-
     if len(data) == 0:
         break
-
     print(len(data), "rows found at timestamp", current_time)
-
     prices += data
-
     current_time = int(data[-1]["timestamp"])
 
 with open('../usdETHprice/full.csv', 'w', newline='') as output_file:
-    dict_writer = csv.DictWriter(output_file, keys)
-    dict_writer.writeheader()
-    dict_writer.writerows(prices)
+    DICT_WRITER = csv.DictWriter(output_file, keys)
+    DICT_WRITER.writeheader()
+    DICT_WRITER.writerows(prices)
         

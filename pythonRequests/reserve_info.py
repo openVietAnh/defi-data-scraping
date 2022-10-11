@@ -1,6 +1,11 @@
-import requests
+# pylint: disable-msg=C0103
+"""
+    Get reserve info
+    (deposit rate, borrow rate, utilization rate, total value locked)
+    from AAVE V2 subgraph
+"""
 import csv
-from datetime import datetime
+import requests
 
 keys, info, token = None, [], "WBTC"
 errors = []
@@ -11,7 +16,6 @@ with open("../csvData/hashtoBlockNum/" + token + "_block.csv", "r") as csv_file:
     next(reader, None)
     for item in reader:
         num = item[1]
-
         query = """
         {
             reserves(block: {number: """ + num + """}, where: {symbol: \"""" + token + """\"}) {
@@ -33,24 +37,20 @@ with open("../csvData/hashtoBlockNum/" + token + "_block.csv", "r") as csv_file:
             print("Problem reading from block", num, ":", response.status_code)
             errors.append(num)
             continue
-
         try:
             data = response.json()["data"]["reserves"][0]
-        except Exception:
+        except (KeyError, AttributeError) as error:
             print("Error at block", num)
+            print(error)
             errors.append(num)
             continue
-
         print("Get block", num, "at timestamp", data["lastUpdateTimestamp"])
-        
         if keys is None:
             keys = list(data.keys()) + ["blockNumber"]
-
         data["blockNumber"] = num
         info.append(data)
 
 with open('../csvData/' + token + '_info.csv', 'w', newline='') as output_file:
-    dict_writer = csv.DictWriter(output_file, keys)
-    dict_writer.writeheader()
-    dict_writer.writerows(info)
-        
+    DICT_WRITER = csv.DictWriter(output_file, keys)
+    DICT_WRITER.writeheader()
+    DICT_WRITER.writerows(info)
