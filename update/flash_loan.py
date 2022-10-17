@@ -9,19 +9,17 @@ last_transactions = set()
 while True:
     query = """
     {
-        usageAsCollaterals(where: {timestamp_lte: """ + str(current_time) + """, timestamp_gt: 1654016400}, first: 1000, orderBy: timestamp, orderDirection: desc) {
+        flashLoans(where: {timestamp_lte: """ + str(current_time) + """, timestamp_gt: 1654016400}, first: 1000, orderBy: timestamp, orderDirection: desc) {
             id
-            pool {
-                id
-            }
-            user {
-                id
-            }
             reserve {
                 symbol
             }
-            fromState
-            toState
+            target
+            amount
+            totalFee
+            initiator {
+                id
+            }
             timestamp
         }
     }
@@ -34,7 +32,7 @@ while True:
         continue
     
     try:
-        data = response.json()["data"]["usageAsCollaterals"]
+        data = response.json()["data"]["flashLoans"]
     except Exception:
         print("Error at timestamp", current_time)
         continue
@@ -55,9 +53,8 @@ while True:
     print(len(data) - index, "transactions found at timestamp", current_time)
 
     for transaction in data[index:]:
-        transaction["user"] = transaction["user"]["id"]
+        transaction["initiator"] = transaction["initiator"]["id"]
         transaction["reserve"] = transaction["reserve"]["symbol"]
-        transaction["pool"] = transaction["pool"]["id"]
         transactions.append(transaction)
 
     current_time = int(data[-1]["timestamp"])
@@ -67,8 +64,8 @@ while True:
         last_transactions.add(data[index]["id"])
         index -= 1
 
-with open('usageAsCollateral.csv', 'w', newline='') as output_file:
-    dict_writer = csv.DictWriter(output_file, keys)
-    dict_writer.writeheader()
-    dict_writer.writerows(transactions)
+with open('flashLoan.csv', 'w', newline='') as output_file:
+    DICT_WRITER = csv.DictWriter(output_file, keys)
+    DICT_WRITER.writeheader()
+    DICT_WRITER.writerows(transactions)
         

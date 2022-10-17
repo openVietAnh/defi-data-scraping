@@ -9,7 +9,7 @@ last_transactions = set()
 while True:
     query = """
     {
-        liquidationCalls(where: {timestamp_lte: """ + str(current_time) + """, timestamp_gt: 1654016400}, first: 1000, orderBy: timestamp, orderDirection: desc) {
+        redeemUnderlyings(where: {timestamp_lte:""" + str(current_time) + """, timestamp_gt: 1654016400}, first: 1000, orderBy: timestamp, orderDirection: desc) {
             id
             pool {
                 id
@@ -17,15 +17,13 @@ while True:
             user {
                 id
             }
-            collateralReserve {
+            to {
+                id
+            }
+            reserve {
                 symbol
             }
-            collateralAmount
-            principalReserve {
-                symbol
-            }
-            principalAmount
-            liquidator
+            amount
             timestamp
         }
     }
@@ -38,7 +36,7 @@ while True:
         continue
     
     try:
-        data = response.json()["data"]["liquidationCalls"]
+        data = response.json()["data"]["redeemUnderlyings"]
     except Exception:
         print("Error at timestamp", current_time)
         continue
@@ -56,14 +54,13 @@ while True:
     except IndexError:
             current_time -= 1
             continue
-
     print(len(data) - index, "transactions found at timestamp", current_time)
 
     for transaction in data[index:]:
         transaction["user"] = transaction["user"]["id"]
+        transaction["to"] = transaction["to"]["id"]
+        transaction["reserve"] = transaction["reserve"]["symbol"]
         transaction["pool"] = transaction["pool"]["id"]
-        transaction["collateralReserve"] = transaction["collateralReserve"]["symbol"]
-        transaction["principalReserve"] = transaction["principalReserve"]["symbol"]
         transactions.append(transaction)
 
     current_time = int(data[-1]["timestamp"])
@@ -73,8 +70,8 @@ while True:
         last_transactions.add(data[index]["id"])
         index -= 1
 
-with open('liquidationCall.csv', 'w', newline='') as output_file:
-    dict_writer = csv.DictWriter(output_file, keys)
-    dict_writer.writeheader()
-    dict_writer.writerows(transactions)
+with open('redeemUnderlying.csv', 'w', newline='') as output_file:
+    DICT_WRITER = csv.DictWriter(output_file, keys)
+    DICT_WRITER.writeheader()
+    DICT_WRITER.writerows(transactions)
         
