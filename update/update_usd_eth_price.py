@@ -43,7 +43,7 @@ while True:
     current_time = int(data[-1]["timestamp"])
 
 with open('../csvData/update_data/price/usd_ethPrice.csv', 'w', newline='') as output_file:
-    dict_writer = csv.DictWriter(output_file, keys)
-    dict_writer.writeheader()
-    dict_writer.writerows(prices)
+    DICT_WRITER = csv.DictWriter(output_file, keys)
+    DICT_WRITER.writeheader()
+    DICT_WRITER.writerows(prices)
         

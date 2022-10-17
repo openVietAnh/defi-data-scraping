@@ -3,14 +3,13 @@ import csv
 from datetime import datetime
 
 keys, transactions = None, []
-error = []
 current_time = 1659286800
 last_transactions = set()
 
 while True:
     query = """
     {
-        userTransactions(where: {timestamp_lte: """ + str(current_time) + """, timestamp_gt: 1654016400}, first: 1000, orderBy: timestamp, orderDirection: desc) {
+        usageAsCollaterals(where: {timestamp_lte: """ + str(current_time) + """, timestamp_gt: 1654016400}, first: 1000, orderBy: timestamp, orderDirection: desc) {
             id
             pool {
                 id
@@ -18,6 +17,11 @@ while True:
             user {
                 id
             }
+            reserve {
+                symbol
+            }
+            fromState
+            toState
             timestamp
         }
     }
@@ -30,7 +34,7 @@ while True:
         continue
     
     try:
-        data = response.json()["data"]["userTransactions"]
+        data = response.json()["data"]["usageAsCollaterals"]
     except Exception:
         print("Error at timestamp", current_time)
         continue
@@ -51,8 +55,9 @@ while True:
     print(len(data) - index, "transactions found at timestamp", current_time)
 
     for transaction in data[index:]:
-        transaction["pool"] = transaction["pool"]["id"]
         transaction["user"] = transaction["user"]["id"]
+        transaction["reserve"] = transaction["reserve"]["symbol"]
+        transaction["pool"] = transaction["pool"]["id"]
         transactions.append(transaction)
 
     current_time = int(data[-1]["timestamp"])
@@ -62,8 +67,8 @@ while True:
         last_transactions.add(data[index]["id"])
         index -= 1
 
-with open('allTransaction.csv', 'w', newline='') as output_file:
-    dict_writer = csv.DictWriter(output_file, keys)
-    dict_writer.writeheader()
-    dict_writer.writerows(transactions)
+with open('usageAsCollateral.csv', 'w', newline='') as output_file:
+    DICT_WRITER = csv.DictWriter(output_file, keys)
+    DICT_WRITER.writeheader()
+    DICT_WRITER.writerows(transactions)
         
