@@ -1,7 +1,7 @@
 import csv
 import datetime
 
-token = "DAI"
+token = "WETH"
 keys = [
     "timestamp", 
     "time", 
@@ -54,6 +54,7 @@ with open("../reserveInfo/" + token + "_full_info.csv", "r") as csvfile:
 data = []
 while start_date in info.keys():
     row = {}
+    row["date"] = start_date.strftime('%d/%m/%Y')
     row["totalDeposits"] = sum(info[start_date]["totalDeposits"]) / len(info[start_date]["totalDeposits"])
     row["depositRate"] = sum(info[start_date]["depositRate"]) / len(info[start_date]["depositRate"])
     row["stableBorrowRate"] = sum(info[start_date]["stableBorrowRate"]) / len(info[start_date]["stableBorrowRate"])
@@ -68,6 +69,6 @@ while start_date in info.keys():
     start_date += datetime.timedelta(days = 1);
 
 with open(token + "_average.csv", 'w', newline='') as output_file:
-    DICT_WRITER = csv.DictWriter(output_file, keys)
+    DICT_WRITER = csv.DictWriter(output_file, ["date"] + keys[3:])
     DICT_WRITER.writeheader()
     DICT_WRITER.writerows(data)
