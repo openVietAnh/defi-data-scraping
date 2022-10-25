@@ -1,78 +1,73 @@
 import csv
 import datetime
 
-token_lst = ["WBTC"]
-keys = ["timestamp", "time", "blockNumber", "totalDeposits", "depositRate", "stableBorrowRate", "variableBorrowRate", "utilizationRate", "userCount", "HHI"]
-current_time = datetime.datetime(2020, 12, 2, 20, 8, 0)
+token = "DAI"
+keys = [
+    "timestamp", 
+    "time", 
+    "blockNumber", 
+    "totalDeposits", 
+    "depositRate", 
+    "stableBorrowRate", 
+    "variableBorrowRate", 
+    "utilizationRate", 
+    "userCount", 
+    "HHI", 
+    "depositers", 
+    "borrowers", 
+    "price"
+]
+start_date = datetime.datetime(2020, 12, 2)
+info = {}
 
-# timestamp,time,blockNumber,totalDeposits,depositRate,stableBorrowRate,variableBorrowRate,utilizationRate,userCount,HHI
-for token in token_lst:
-    print(token)
-    with open(token + ".csv", "r") as csvfile:
-        data = []
-        reader = csv.reader(csvfile, delimiter=",")
-        next(reader, None)
-        totalDeposits, depositRates, stable, variable, utilization, userCount, HHI = [], [], [], [], [], [], []
-        for item in reader:
-            time = datetime.datetime.fromtimestamp(float(item[0]))
-            if time.day == current_time.day:
-                totalDeposits.append(float(item[3]))
-                depositRates.append(float(item[4]))
-                stable.append(float(item[5]))
-                variable.append(float(item[6]))
-                utilization.append(float(item[7]))
-                userCount.append(float(item[8]))
-                HHI.append(float(item[9]))
-            else:
-                try:
-                    format_time = "{}/{}/{}".format(current_time.day, current_time.month, current_time.year)
-                    avgTotal = sum(totalDeposits) / len(totalDeposits)
-                    avgDeposit = sum(depositRates) / len(depositRates)
-                    avgStable = sum(stable) / len(stable)
-                    avgVariable = sum(variable) / len(variable)
-                    avgUlt = sum(utilization) / len(utilization)
-                    avgUser = sum(userCount) / len(userCount)
-                    avgHHI = sum(HHI) / len(HHI)
-                    data.append({ "time": format_time,
-                        "totalDeposits": avgTotal,
-                        "depositRate": avgDeposit,
-                        "stableBorrowRate": avgStable,
-                        "variableBorrowRate": avgVariable,
-                        "utilizationRate": avgUlt,
-                        "userCount": avgUser,
-                        "HHI": avgHHI})
-                    totalDeposits, depositRates, stable, variable, utilization, userCount, HHI = [], [], [], [], [], [], []
-                    totalDeposits.append(float(item[3]))
-                    depositRates.append(float(item[4]))
-                    stable.append(float(item[5]))
-                    variable.append(float(item[6]))
-                    utilization.append(float(item[7]))
-                    userCount.append(float(item[8]))
-                    HHI.append(float(item[9]))
-                    current_time = time
-                except ZeroDivisionError:
-                    print(format_time)
-                    print(len(data))
-                    print(len(totalDeposits))
-                    break
-        format_time = "{}/{}/{}".format(current_time.day, current_time.month, current_time.year)
-        avgTotal = sum(totalDeposits) / len(totalDeposits)
-        avgDeposit = sum(depositRates) / len(depositRates)
-        avgStable = sum(stable) / len(stable)
-        avgVariable = sum(variable) / len(variable)
-        avgUlt = sum(utilization) / len(utilization)
-        avgUser = sum(userCount) / len(userCount)
-        avgHHI = sum(HHI) / len(HHI)
-        data.append({ "time": format_time,
-            "totalDeposits": avgTotal,
-            "depositRate": avgDeposit,
-            "stableBorrowRate": avgStable,
-            "variableBorrowRate": avgVariable,
-            "utilizationRate": avgUlt,
-            "userCount": avgUser,
-            "HHI": avgHHI})
+with open("../reserveInfo/" + token + "_full_info.csv", "r") as csvfile:
+    reader = csv.reader(csvfile, delimiter=",")
+    next(reader, None)
+    for item in reader:
+        date = datetime.datetime.fromtimestamp(int(item[0]))
+        if date >= start_date:
+            d = datetime.datetime(date.year, date.month, date.day)
+            try:
+                info[d]["totalDeposits"].append(float(item[3]))
+                info[d]["depositRate"].append(float(item[4]))
+                info[d]["stableBorrowRate"].append(float(item[5]))
+                info[d]["variableBorrowRate"].append(float(item[6]))
+                info[d]["utilizationRate"].append(float(item[7]))
+                info[d]["userCount"].append(float(item[8]))
+                info[d]["HHI"].append(float(item[9]))
+                info[d]["depositers"].append(float(item[10]))
+                info[d]["borrowers"].append(float(item[11]))
+                info[d]["price"].append(float(item[12]))
+            except KeyError:
+                info[d] = {}
+                info[d]["totalDeposits"] = [float(item[3])]
+                info[d]["depositRate"] = [float(item[4])]
+                info[d]["stableBorrowRate"] = [float(item[5])]
+                info[d]["variableBorrowRate"] = [float(item[6])]
+                info[d]["utilizationRate"] = [float(item[7])]
+                info[d]["userCount"] = [float(item[8])]
+                info[d]["HHI"] = [float(item[9])]
+                info[d]["depositers"] = [float(item[10])]
+                info[d]["borrowers"] = [float(item[11])]
+                info[d]["price"] = [float(item[12])]
 
-    with open(token + "_average.csv", 'w', newline='') as output_file:
-            dict_writer = csv.DictWriter(output_file, ["time", "totalDeposits", "depositRate", "stableBorrowRate", "variableBorrowRate", "utilizationRate", "userCount", "HHI"])
-            dict_writer.writeheader()
-            dict_writer.writerows(data)
+data = []
+while start_date in info.keys():
+    row = {}
+    row["totalDeposits"] = sum(info[start_date]["totalDeposits"]) / len(info[start_date]["totalDeposits"])
+    row["depositRate"] = sum(info[start_date]["depositRate"]) / len(info[start_date]["depositRate"])
+    row["stableBorrowRate"] = sum(info[start_date]["stableBorrowRate"]) / len(info[start_date]["stableBorrowRate"])
+    row["variableBorrowRate"] = sum(info[start_date]["variableBorrowRate"]) / len(info[start_date]["variableBorrowRate"])
+    row["utilizationRate"] = sum(info[start_date]["utilizationRate"]) / len(info[start_date]["utilizationRate"])
+    row["userCount"] = sum(info[start_date]["userCount"]) / len(info[start_date]["userCount"])
+    row["HHI"] = sum(info[start_date]["HHI"]) / len(info[start_date]["HHI"])
+    row["depositers"] = sum(info[start_date]["depositers"]) / len(info[start_date]["depositers"])
+    row["borrowers"] = sum(info[start_date]["borrowers"]) / len(info[start_date]["borrowers"])
+    row["price"] = sum(info[start_date]["price"]) / len(info[start_date]["price"])
+    data.append(row)
+    start_date += datetime.timedelta(days = 1);
+
+with open(token + "_average.csv", 'w', newline='') as output_file:
+    DICT_WRITER = csv.DictWriter(output_file, keys)
+    DICT_WRITER.writeheader()
+    DICT_WRITER.writerows(data)
