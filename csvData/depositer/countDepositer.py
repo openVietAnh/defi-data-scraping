@@ -98,10 +98,7 @@ with open(TOKEN + "_1.txt", "r") as f:
         except Exception as e:
             pass
 
-with open(TOKEN + '_depositers.csv', 'w', newline='') as output_file:
-    dict_writer = csv.DictWriter(output_file, ["block", "depositers"])
-    dict_writer.writeheader()
-    dict_writer.writerows(data)
+ 
 
 
 
