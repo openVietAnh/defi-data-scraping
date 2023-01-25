@@ -1,6 +1,6 @@
 import csv
 
-token_lst = ["USDT"]
+token_lst = ["WBTC"]
 
 for token in token_lst:
     userCount, tokenHHI, depositers, borrowers = {}, {}, {}, {}
@@ -10,19 +10,14 @@ for token in token_lst:
         for item in reader:
             userCount[item[0]] = item[1]
 
-    with open("../userFunds/" + token + "_HHI.csv", "r") as csvfile:
-        reader = csv.reader(csvfile, delimiter=",")
-        next(reader, None)
-        for item in reader:
-            tokenHHI[item[0]] = item[1]
-
     with open("../depositer/" + token + "_depositers.csv", "r") as csvfile:
         reader = csv.reader(csvfile, delimiter=",")
         next(reader, None)
         for item in reader:
-            depositers[item[0]] = item[1]
+            depositers[item[0]] = item[2]
+            tokenHHI[item[0]] = item[1]
 
-    with open("../borrower/" + token + "_borrower.csv", "r") as csvfile:
+    with open("../borrower/" + token + "_borrowers.csv", "r") as csvfile:
         reader = csv.reader(csvfile, delimiter=",")
         next(reader, None)
         for item in reader:
