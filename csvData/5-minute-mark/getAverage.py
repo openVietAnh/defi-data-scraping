@@ -1,7 +1,7 @@
 import csv
 import datetime
 
-token = "WETH"
+token = "WBTC"
 keys = [
     "timestamp", 
     "time", 

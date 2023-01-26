@@ -35,6 +35,6 @@ for token in token_lst:
         data.append(dict(info))
 
         with open(token + "-user.csv", 'w', newline='') as output_file:
-            dict_writer = csv.DictWriter(output_file, keys)
-            dict_writer.writeheader()
-            dict_writer.writerows(data)
+            DICT_WRITER = csv.DictWriter(output_file, keys)
+            DICT_WRITER.writeheader()
+            DICT_WRITER.writerows(data)

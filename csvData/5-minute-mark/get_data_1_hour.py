@@ -37,7 +37,7 @@ for token in token_lst:
                 # info["time"] = time.isoformat(timespec='seconds')
                 info["time"] = "{}/{}/{} {}:{}".format(time.day, time.month, time.year, time.hour, time.minute)
                 data.append(dict(info))
-                time += datetime.timedelta(minutes=5)
+                time += datetime.timedelta(minutes=60)
             info = new_info
             if row_time > end_time:
                 break
@@ -45,7 +45,7 @@ for token in token_lst:
         info["time"] = "{}/{}/{} {}:{}".format(time.day, time.month, time.year, time.hour, time.minute)
         data.append(dict(info))
 
-        with open(token + ".csv", 'w', newline='') as output_file:
+        with open(token + "_1hour.csv", 'w', newline='') as output_file:
             DICT_WRITER = csv.DictWriter(output_file, keys)
             DICT_WRITER.writeheader()
             DICT_WRITER.writerows(data)
