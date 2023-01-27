@@ -14,6 +14,6 @@ for file in file_lst:
     data.sort(key = lambda x: x["timestamp"])
 
     with open(file + '.csv', 'w', newline='') as output_file:
-        dict_writer = csv.DictWriter(output_file, keys)
-        dict_writer.writeheader()
-        dict_writer.writerows(data)
+        DICT_WRITER = csv.DictWriter(output_file, keys)
+        DICT_WRITER.writeheader()
+        DICT_WRITER.writerows(data)

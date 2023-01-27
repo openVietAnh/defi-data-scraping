@@ -1,6 +1,6 @@
-import requests
+
 import csv
-from datetime import datetime
+import requests
 
 keys, transactions = None, []
 current_time = 1659286800
@@ -30,25 +30,20 @@ while True:
     }
     """
     response = requests.post('https://api.thegraph.com/subgraphs/name/aave/protocol-v2'
-                                '',
-                                json={'query': query})
-
+                             '',
+                             json={'query': query})
     if response.status_code != 200:
         print("Problem reading from timestamp", current_time, ":", response.status_code)
         continue
-    
     try:
         data = response.json()["data"]["borrows"]
     except Exception:
         print("Error at timestamp", current_time)
         continue
-
     if len(data) == 0:
         break
-    
     if keys is None:
         keys = data[0].keys()
-
     index = 0
     try:
         while data[index]["id"] in last_transactions:
@@ -57,13 +52,11 @@ while True:
             current_time -= 1
             continue
     print(len(data) - index, "transactions found at timestamp", current_time)
-
     for transaction in data[index:]:
         transaction["user"] = transaction["user"]["id"]
         transaction["reserve"] = transaction["reserve"]["symbol"]
         transaction["caller"] = transaction["caller"]["id"]
         transactions.append(transaction)
-
     current_time = int(data[-1]["timestamp"])
     index = -1
     last_transactions = set()
@@ -75,4 +68,3 @@ with open('borrow.csv', 'w', newline='') as output_file:
     DICT_WRITER = csv.DictWriter(output_file, keys)
     DICT_WRITER.writeheader()
     DICT_WRITER.writerows(transactions)
-        

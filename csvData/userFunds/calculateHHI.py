@@ -104,9 +104,9 @@ with open(TOKEN + "_fund_block.csv", "r") as f:
         print("Estimated end at:", end.hour, end.minute)
 
 with open(TOKEN + '_HHI.csv', 'w', newline='') as output_file:
-    dict_writer = csv.DictWriter(output_file, ["block", "HHI"])
-    dict_writer.writeheader()
-    dict_writer.writerows(data)
+    DICT_WRITER = csv.DictWriter(output_file, ["block", "HHI"])
+    DICT_WRITER.writeheader()
+    DICT_WRITER.writerows(data)
 
 
 

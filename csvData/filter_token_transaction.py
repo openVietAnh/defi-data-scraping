@@ -34,6 +34,6 @@ with open("allTransactionType.csv", "r") as csvfile:
 
 for token in token_lst:
     with open("./tokenTransactions/" + token + ".csv", 'w', newline='') as output_file:
-        dict_writer = csv.DictWriter(output_file, keys)
-        dict_writer.writeheader()
-        dict_writer.writerows(token_transactions[token])
+        DICT_WRITER = csv.DictWriter(output_file, keys)
+        DICT_WRITER.writeheader()
+        DICT_WRITER.writerows(token_transactions[token])
