@@ -1,10 +1,10 @@
 import csv 
 
-token_lst = ["USDT", "WBTC", "DAI"]
+token_lst = ["USDC"]
 
 for token in token_lst:
     s = set()
-    with open(token + "_HHI.csv", "r") as csvfile:
+    with open(token + "_HHI_merged.csv", "r") as csvfile:
         reader = csv.reader(csvfile, delimiter=",")
         next(reader, None)
         for item in reader:

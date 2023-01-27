@@ -26,10 +26,10 @@ with open("./update_data/allTransaction_update.csv", "r") as csv_file:
             count += 1
 print("Missing type:", count)
 with open('./update_data/allTransactionType.csv', 'w', newline='') as output_file:
-    dict_writer = csv.DictWriter(output_file, ["id", "type", "user", "pool", "timestamp"] )
-    dict_writer.writeheader()
-    dict_writer.writerows(data)
+    DICT_WRITER = csv.DictWriter(output_file, ["id", "type", "user", "pool", "timestamp"] )
+    DICT_WRITER.writeheader()
+    DICT_WRITER.writerows(data)
 with open('./update_data/missing.csv', 'w', newline='') as output_file:
-    dict_writer = csv.DictWriter(output_file, ["id", "user", "pool", "timestamp"] )
-    dict_writer.writeheader()
-    dict_writer.writerows(typeNotFoundData)
+    DICT_WRITER = csv.DictWriter(output_file, ["id", "user", "pool", "timestamp"] )
+    DICT_WRITER.writeheader()
+    DICT_WRITER.writerows(typeNotFoundData)

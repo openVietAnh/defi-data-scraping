@@ -8,6 +8,6 @@ with open("usd_ethUpdatedPrice.csv") as csvfile:
         data.append({"timestamp": item[0], "price": 1/ (float(item[1]) / 1000000000000000000)})
 
 with open("WETH-usd-price.csv", 'w', newline='') as output_file:
-    dict_writer = csv.DictWriter(output_file, ["timestamp", "price"])
-    dict_writer.writeheader()
-    dict_writer.writerows(data)
+    DICT_WRITER = csv.DictWriter(output_file, ["timestamp", "price"])
+    DICT_WRITER.writeheader()
+    DICT_WRITER.writerows(data)

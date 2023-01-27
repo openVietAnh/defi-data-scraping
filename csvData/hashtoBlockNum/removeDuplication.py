@@ -13,6 +13,6 @@ for token in token_lst:
                 hashset.add(item[0])
 
     with open(token + '_filtered.csv', 'w', newline='') as output_file:
-        dict_writer = csv.DictWriter(output_file, ["hash", "block"])
-        dict_writer.writeheader()
-        dict_writer.writerows(data)
+        DICT_WRITER = csv.DictWriter(output_file, ["hash", "block"])
+        DICT_WRITER.writeheader()
+        DICT_WRITER.writerows(data)
