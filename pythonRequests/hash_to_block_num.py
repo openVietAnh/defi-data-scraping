@@ -6,7 +6,7 @@ import csv
 from web3 import Web3
 URL = "https://eth-mainnet.alchemyapi.io/v2/0e3D_mlVqAhNuFvqu1-Exd3ElNON88KE"
 WEB3_PROVIDER = Web3(Web3.HTTPProvider(URL))
-print(WEB3_PROVIDER.isConnected())
+print(WEB3_PROVIDER.is_connected())
 
 data, hash_set = [], set()
 TOKEN_LST = ["DAI", "USDC", "USDT", "WBTC", "WETH"]

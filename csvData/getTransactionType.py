@@ -2,18 +2,28 @@ import csv
 
 TYPE = ("borrow", "deposit", "flashLoan", "liquidationCall", "redeemUnderlying", "repay", "swap", "usageAsCollateral")
 transactionType = {}
+TYPE_ID_INDEX = {
+    "borrow": 4,
+    "deposit": 2,
+    "flashLoan": 1,
+    "liquidationCall": 2,
+    "redeemUnderlying": 1,
+    "repay": 1,
+    "swap": 2,
+    "usageAsCollateral": 1,
+}
 
 for file_name in TYPE:
-    with open("./update_data/" + file_name + "_update.csv", "r") as csv_file:
+    with open("./update_data/" + file_name + ".csv", "r") as csv_file:
         reader = csv.reader(csv_file, delimiter=",")
         next(reader, None)
         for item in reader:
-            transactionType[item[0]] = file_name
+            transactionType[item[TYPE_ID_INDEX[file_name]]] = file_name
 
-data, keys = [], ["id", "pool", "user", "timestamp"]
+data, keys = [], ["id", "pool", "timestamp", "user"]
 typeNotFoundData = []
 count = 0
-with open("./update_data/allTransaction_update.csv", "r") as csv_file:
+with open("./update_data/allTransaction.csv", "r") as csv_file:
     reader = csv.reader(csv_file, delimiter=",")
     next(reader, None)
     for item in reader:

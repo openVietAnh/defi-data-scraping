@@ -11,6 +11,6 @@ for token in token_lst:
             if time is None:
                 time = int(item[-1])
             else:
-                distance.append(int(item[-1]) - time)
+                distance.append(time - int(item[-1]))
                 time = int(item[-1])
         print(token, ":", sum(distance) / len(distance) / 60, "minutes")

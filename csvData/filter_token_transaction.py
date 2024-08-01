@@ -7,25 +7,35 @@ token_transactions = {token: [] for token in token_lst}
 keys = ["id", "type", "user", "pool", "timestamp"]
 
 file_config = [
-    ("borrow", 3),
+    ("borrow", 5),
     ("deposit", 3),
     ("repay", 4),
     ("usageAsCollateral", 3),
-    ("redeemUnderlying", 4),
-    ("swap", 3),
-    ("liquidationCall", 3),
-    ("flashLoan", 1),
-    ("rebalanceStableBorrowRate", 3)
+    ("redeemUnderlying", 3),
+    ("swap", 4),
+    ("liquidationCall", 6),
+    ("flashLoan", 3),
 ]
 
+TYPE_ID_INDEX = {
+    "borrow": 4,
+    "deposit": 2,
+    "flashLoan": 1,
+    "liquidationCall": 2,
+    "redeemUnderlying": 1,
+    "repay": 1,
+    "swap": 2,
+    "usageAsCollateral": 1,
+}
+
 for file in file_config:
-    with open(file[0] + ".csv", "r") as csvfile:
+    with open("./update_data/" + file[0] + ".csv", "r") as csvfile:
         reader = csv.reader(csvfile, delimiter=",")
         next(reader, None)
         for item in reader:
-            hash_to_token[item[0]] = item[file[1]]
+            hash_to_token[item[TYPE_ID_INDEX[file[0]]]] = item[file[1]]
 
-with open("allTransactionType.csv", "r") as csvfile:
+with open("./update_data/allTransactionType.csv", "r") as csvfile:
     reader = csv.reader(csvfile, delimiter=",")
     next(reader, None)
     for item in reader:
