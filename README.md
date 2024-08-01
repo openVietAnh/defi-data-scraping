@@ -1,13 +1,14 @@
 # defi-scraping
+
 Scraping and Querying Decentralized Finance's Information on the blockchain
 
-# Directories
-`csvData`: Containing AAVE protocol's data mined from The Graph, with 5 token (WBTC, WETH, DAI, USDC, USDT)
+# How to update data to current time
 
-`dataAnalysis`: Containing Python notebooks for drawing charts from csv files.
-
-`exportedImages`: Exported charts from `dataAnalysis`
-
-`pythonRequests`: Python code to send HTTP data request to The Graph.
-
-`usdETHprice`: Get USD price in ETH then calculate each token historical prices data.
+- Final data is in csvData/5-minutes-mark
+- 5 minutes mark data is calculated from reserveInfo/<token>-full-info.csv
+- token-full-info is calculated from token-info and tokenPriceinUSD/token-usd-price
+  - token-info is merged from tokenUserCount, depositer, borrower and token_TLV_USD
+  - WETH USD price is calculated from usd ETH price
+  - other tokens USD price is calculated from token price in ETH
+- token_TVL_USD is calculated from token_processed_info
+- token_processed_info is calculated from token_raw_info

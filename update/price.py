@@ -53,5 +53,3 @@ for token in token_lst:
         DICT_WRITER = csv.DictWriter(output_file, keys)
         DICT_WRITER.writeheader()
         DICT_WRITER.writerows(prices)
-            
-        
