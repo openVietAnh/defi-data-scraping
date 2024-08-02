@@ -132,10 +132,8 @@ dist
 # Python import
 __pycache__
 
-# Big files
-allTransaction.csv
-allTransactionType.csv
-
 # Javascript node module
 node_modules
-csvData/5-minute-mark/*.csv
+
+# CSV Data
+*.csv
