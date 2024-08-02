@@ -16,8 +16,7 @@ API_KEY = os.getenv("API_KEY")
 
 FIRST_PART_QUERY = """
 {
-        userTransactions(where: {timestamp_lte: 
-"""
+        userTransactions(where: {timestamp_lte: """ + current_time
 SECOND_PART_QUERY = """
 , timestamp_gt: """ + START_TIME + """}, first: 1000, orderBy: timestamp, orderDirection: desc) {
             id
@@ -34,7 +33,7 @@ SECOND_PART_QUERY = """
 
 while True:
     query = FIRST_PART_QUERY + str(current_time) + SECOND_PART_QUERY
-    response = requests.post("https://gateway-arbitrum.network.thegraph.com/api/" + API_KEY + "/subgraphs/id/8wR23o1zkS4gpLqLNU4kG3JHYVucqGyopL5utGxP2q1N",
+    response = requests.post('https://gateway-arbitrum.network.thegraph.com/api/' + API_KEY + '/subgraphs/id/8wR23o1zkS4gpLqLNU4kG3JHYVucqGyopL5utGxP2q1N',
                              '',
                              json={'query': query})
     if response.status_code != 200:
