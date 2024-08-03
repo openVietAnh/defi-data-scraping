@@ -16,7 +16,7 @@ API_KEY = os.getenv("API_KEY")
 while True:
     query = """
     {
-        liquidationCalls(where: {timestamp_lte: """ + str(current_time) + """, timestamp_gt: 1654016400}, first: 1000, orderBy: timestamp, orderDirection: desc) {
+        liquidationCalls(where: {timestamp_lte: """ + str(current_time) + """, timestamp_gt: """ START_TIME + """}, first: 1000, orderBy: timestamp, orderDirection: desc) {
             id
             pool {
                 id
@@ -37,13 +37,13 @@ while True:
         }
     }
     """
-    response = requests.post('https://api.thegraph.com/subgraphs/name/aave/protocol-v2'
+    response = requests.post('https://gateway-arbitrum.network.thegraph.com/api/' + API_KEY + '/subgraphs/id/8wR23o1zkS4gpLqLNU4kG3JHYVucqGyopL5utGxP2q1N'
                                 '',
                                 json={'query': query})
     if response.status_code != 200:
         print("Problem reading from timestamp", current_time, ":", response.status_code)
         continue
-    
+
     try:
         data = response.json()["data"]["liquidationCalls"]
     except Exception:
@@ -52,7 +52,7 @@ while True:
 
     if len(data) == 0:
         break
-    
+
     if keys is None:
         keys = data[0].keys()
 
@@ -81,6 +81,6 @@ while True:
         index -= 1
 
 with open('liquidationCall.csv', 'w', newline='') as output_file:
-    DICT_WRITER = csv.DictWriter(output_file, keys)
-    DICT_WRITER.writeheader()
-    DICT_WRITER.writerows(transactions)
+    dict_writer = csv.DictWriter(output_file, keys)
+    dict_writer.writeheader()
+    dict_writer.writerows(transactions)

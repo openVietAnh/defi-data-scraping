@@ -38,7 +38,7 @@ while True:
     if response.status_code != 200:
         print("Problem reading from timestamp", current_time, ":", response.status_code)
         continue
-    
+
     try:
         data = response.json()["data"]["flashLoans"]
     except Exception:
@@ -47,7 +47,7 @@ while True:
 
     if len(data) == 0:
         break
-    
+
     if keys is None:
         keys = data[0].keys()
 
@@ -56,8 +56,8 @@ while True:
         while data[index]["id"] in last_transactions:
             index += 1
     except IndexError:
-            current_time -= 1
-            continue
+        current_time -= 1
+        continue
     print(len(data) - index, "transactions found at timestamp", current_time)
 
     for transaction in data[index:]:
@@ -73,6 +73,6 @@ while True:
         index -= 1
 
 with open('flashLoan.csv', 'w', newline='') as output_file:
-    DICT_WRITER = csv.DictWriter(output_file, keys)
-    DICT_WRITER.writeheader()
-    DICT_WRITER.writerows(transactions)
+    dict_writer = csv.DictWriter(output_file, keys)
+    dict_writer.writeheader()
+    dict_writer.writerows(transactions)
